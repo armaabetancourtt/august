@@ -80,10 +80,10 @@ def analyze_property(
 
     evidence = [
         Evidence(
-            label="size × neighborhood baseline",
+            label="size x neighborhood baseline",
             value=round(size_component, 2),
             direction="base",
-            method="area_m2 × neighborhood_price_m2",
+            method="area_m2 x neighborhood_price_m2",
             confidence=confidence,
         ),
         Evidence(
