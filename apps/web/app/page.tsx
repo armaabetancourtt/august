@@ -14,6 +14,44 @@ type MarketPulse = {
   economic_momentum: string;
 };
 
+type ExecutiveOverview = {
+  market: string;
+  data_classification: string;
+  as_of: string;
+  kpis: {
+    housing_change_12m_pct: number;
+    inflation_change_12m_pp: number;
+    policy_rate_change_12m_pp: number;
+    fx_change_12m_pct: number;
+    median_property_price_mxn: number;
+    median_price_m2: number;
+    property_count: number;
+  };
+  story: {
+    headline: string;
+    signal: string;
+    evidence: string;
+    implication: string;
+    next_decision: string;
+  };
+  market_series: Array<{
+    date: string;
+    inflation_pct: number;
+    policy_rate_pct: number;
+    mxn_usd: number;
+    economic_activity_index: number;
+    housing_index: number;
+  }>;
+  neighborhoods: Array<{
+    neighborhood: string;
+    properties: number;
+    median_price_mxn: number;
+    median_price_m2: number;
+    median_area_m2: number;
+  }>;
+  warning: string;
+};
+
 type Analysis = {
   decision: string;
   fair_value_mxn: number;
@@ -47,8 +85,9 @@ const money = new Intl.NumberFormat("en-US", {
 });
 
 export default function Home() {
-  const [active, setActive] = useState("market");
+  const [active, setActive] = useState("insights");
   const [market, setMarket] = useState<MarketPulse | null>(null);
+  const [overview, setOverview] = useState<ExecutiveOverview | null>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [question, setQuestion] = useState("What is the main risk in this property?");
@@ -77,6 +116,11 @@ export default function Home() {
       .then((r) => r.ok ? r.json() : Promise.reject(new Error("API unavailable")))
       .then(setMarket)
       .catch(() => setMarket(null));
+
+    fetch(`${API}/v1/analytics/overview`)
+      .then((r) => r.ok ? r.json() : Promise.reject(new Error("Analytics unavailable")))
+      .then(setOverview)
+      .catch(() => setOverview(null));
   }, []);
 
   const annualRent = useMemo(
@@ -139,10 +183,11 @@ export default function Home() {
   }
 
   const nav = [
-    ["market", "01", "Market"],
-    ["analyze", "02", "Analyze"],
-    ["scenario", "03", "Scenario Lab"],
-    ["ask", "04", "Ask AUGUST"]
+    ["insights", "01", "Insights"],
+    ["market", "02", "Market"],
+    ["analyze", "03", "Analyze"],
+    ["scenario", "04", "Scenario Lab"],
+    ["ask", "05", "Ask AUGUST"]
   ];
 
   return (
@@ -156,7 +201,10 @@ export default function Home() {
             <button
               key={id}
               className={active === id ? "active" : ""}
-              onClick={() => setActive(id)}
+              onClick={() => {
+                setActive(id);
+                document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
             >
               <span className="nav-index">{index}</span>
               {label}
@@ -185,6 +233,129 @@ export default function Home() {
             then the evidence underneath it.
           </p>
         </header>
+
+        <section className="section executive-section" id="insights">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">Executive insights</h2>
+              <p className="section-copy">Charts are evidence. The story ends in a decision.</p>
+            </div>
+            <span className="decision-state">BI + STORYTELLING</span>
+          </div>
+
+          {overview ? (
+            <>
+              <div className="story-hero">
+                <div>
+                  <div className="story-eyebrow">THE STORY IN ONE SCREEN · {overview.as_of}</div>
+                  <h3>{overview.story.headline}</h3>
+                  <p>{overview.story.implication}</p>
+                </div>
+                <div className="story-next">
+                  <span>NEXT DECISION</span>
+                  <strong>{overview.story.next_decision}</strong>
+                </div>
+              </div>
+
+              <div className="insight-kpis">
+                <Metric
+                  label="HOUSING · 12M"
+                  value={`${overview.kpis.housing_change_12m_pct > 0 ? "+" : ""}${overview.kpis.housing_change_12m_pct}%`}
+                  foot="synthetic index change"
+                />
+                <Metric
+                  label="INFLATION · 12M"
+                  value={`${overview.kpis.inflation_change_12m_pp > 0 ? "+" : ""}${overview.kpis.inflation_change_12m_pp} pp`}
+                  foot="change in percentage points"
+                />
+                <Metric
+                  label="MEDIAN PROPERTY"
+                  value={money.format(overview.kpis.median_property_price_mxn)}
+                  foot={`${overview.kpis.property_count} demo properties`}
+                />
+                <Metric
+                  label="MEDIAN PRICE / M²"
+                  value={money.format(overview.kpis.median_price_m2)}
+                  foot="cross-market synthetic median"
+                />
+              </div>
+
+              <div className="analytics-grid">
+                <div className="panel chart-panel">
+                  <div className="chart-head">
+                    <div>
+                      <span>MARKET TREND</span>
+                      <strong>Housing index · last 24 months</strong>
+                    </div>
+                    <b>{overview.market_series.at(-1)?.housing_index.toFixed(1)}</b>
+                  </div>
+                  <HousingTrend data={overview.market_series} />
+                </div>
+
+                <div className="panel chart-panel">
+                  <div className="chart-head">
+                    <div>
+                      <span>MACRO PRESSURE</span>
+                      <strong>Inflation vs policy rate</strong>
+                    </div>
+                    <div className="chart-legend">
+                      <i className="legend-dot accent-dot" />Inflation
+                      <i className="legend-dot secondary-dot" />Policy rate
+                    </div>
+                  </div>
+                  <RatesTrend data={overview.market_series} />
+                </div>
+              </div>
+
+              <div className="analytics-grid lower-grid">
+                <div className="panel">
+                  <div className="chart-head">
+                    <div>
+                      <span>LOCAL PRICING</span>
+                      <strong>Median price per m² by neighborhood</strong>
+                    </div>
+                  </div>
+                  <NeighborhoodBars rows={overview.neighborhoods} />
+                </div>
+
+                <div className="panel story-panel">
+                  <div className="story-step">
+                    <span>01 · SIGNAL</span>
+                    <p>{overview.story.signal}</p>
+                  </div>
+                  <div className="story-step">
+                    <span>02 · EVIDENCE</span>
+                    <p>{overview.story.evidence}</p>
+                  </div>
+                  <div className="story-step">
+                    <span>03 · IMPLICATION</span>
+                    <p>{overview.story.implication}</p>
+                  </div>
+                  <div className="story-step emphasis">
+                    <span>04 · NEXT DECISION</span>
+                    <p>{overview.story.next_decision}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bi-strip">
+                <div>
+                  <span>ANALYTICS DELIVERY</span>
+                  <strong>One evidence layer → product dashboard → report → BI tools</strong>
+                </div>
+                <div className="bi-tags">
+                  <b>POWER BI</b><b>TABLEAU</b><b>CSV</b><b>DUCKDB</b><b>FASTAPI</b>
+                </div>
+                <code>python -m pipelines.export_bi</code>
+              </div>
+            </>
+          ) : (
+            <div className="panel">
+              <div className="decision-state">ANALYTICS API OFFLINE</div>
+              <p className="section-copy">Start the FastAPI service to load the executive dashboard.</p>
+            </div>
+          )}
+        </section>
 
         <section className="section" id="market">
           <div className="section-head">
@@ -323,6 +494,87 @@ function Metric({ label, value, foot }: { label: string; value: string; foot: st
       <div className="metric-label">{label}</div>
       <div className="metric-value">{value}</div>
       <div className="metric-foot">{foot}</div>
+    </div>
+  );
+}
+
+function chartPoints(values: number[], width = 640, height = 190, pad = 16) {
+  if (!values.length) return "";
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = Math.max(max - min, 0.0001);
+  return values.map((value, index) => {
+    const x = pad + (index / Math.max(values.length - 1, 1)) * (width - pad * 2);
+    const y = height - pad - ((value - min) / span) * (height - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+}
+
+function HousingTrend({ data }: { data: ExecutiveOverview["market_series"] }) {
+  const values = data.map((row) => row.housing_index);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  return (
+    <div className="chart-wrap">
+      <div className="chart-scale"><span>{max.toFixed(0)}</span><span>{min.toFixed(0)}</span></div>
+      <svg className="chart-svg" viewBox="0 0 640 190" role="img" aria-label="Housing index trend">
+        {[0, 1, 2, 3, 4].map((line) => (
+          <line key={line} x1="16" x2="624" y1={16 + line * 39.5} y2={16 + line * 39.5} className="chart-gridline" />
+        ))}
+        <polyline points={chartPoints(values)} className="chart-line chart-line-accent" />
+      </svg>
+      <div className="chart-axis"><span>{data[0]?.date}</span><span>{data.at(-1)?.date}</span></div>
+    </div>
+  );
+}
+
+function RatesTrend({ data }: { data: ExecutiveOverview["market_series"] }) {
+  const inflation = data.map((row) => row.inflation_pct);
+  const policy = data.map((row) => row.policy_rate_pct);
+  const all = [...inflation, ...policy];
+  const min = Math.min(...all);
+  const max = Math.max(...all);
+  const width = 640;
+  const height = 190;
+  const pad = 16;
+  const span = Math.max(max - min, 0.0001);
+  const points = (values: number[]) => values.map((value, index) => {
+    const x = pad + (index / Math.max(values.length - 1, 1)) * (width - pad * 2);
+    const y = height - pad - ((value - min) / span) * (height - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+
+  return (
+    <div className="chart-wrap">
+      <div className="chart-scale"><span>{max.toFixed(1)}%</span><span>{min.toFixed(1)}%</span></div>
+      <svg className="chart-svg" viewBox="0 0 640 190" role="img" aria-label="Inflation and policy rate trend">
+        {[0, 1, 2, 3, 4].map((line) => (
+          <line key={line} x1="16" x2="624" y1={16 + line * 39.5} y2={16 + line * 39.5} className="chart-gridline" />
+        ))}
+        <polyline points={points(inflation)} className="chart-line chart-line-accent" />
+        <polyline points={points(policy)} className="chart-line chart-line-secondary" />
+      </svg>
+      <div className="chart-axis"><span>{data[0]?.date}</span><span>{data.at(-1)?.date}</span></div>
+    </div>
+  );
+}
+
+function NeighborhoodBars({ rows }: { rows: ExecutiveOverview["neighborhoods"] }) {
+  const max = Math.max(...rows.map((row) => row.median_price_m2), 1);
+  return (
+    <div className="bar-list">
+      {rows.map((row) => (
+        <div className="bar-row" key={row.neighborhood}>
+          <div className="bar-label">
+            <strong>{row.neighborhood}</strong>
+            <span>{row.properties} properties</span>
+          </div>
+          <div className="bar-track">
+            <div className="bar-fill" style={{ width: `${(row.median_price_m2 / max) * 100}%` }} />
+          </div>
+          <div className="bar-value">{money.format(row.median_price_m2)}</div>
+        </div>
+      ))}
     </div>
   );
 }
