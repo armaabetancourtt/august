@@ -22,6 +22,17 @@
 
 **Live demo:** not deployed yet · **Executive analytics:** [reports/EXECUTIVE_DEMO_REPORT.md](reports/EXECUTIVE_DEMO_REPORT.md) · **BI workflow:** [docs/BI_STORYTELLING.md](docs/BI_STORYTELLING.md) · **Technical report:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
 
+## Executive analytics — at a glance
+
+![AUGUST executive analytics overview](docs/assets/august-executive-overview.svg)
+
+<p align="center">
+  <img src="docs/assets/august-market-trend.svg" alt="AUGUST housing market trend" width="49%" />
+  <img src="docs/assets/august-neighborhood-pricing.svg" alt="AUGUST neighborhood price per square meter" width="49%" />
+</p>
+
+<sub>All values shown above come from AUGUST's deterministic synthetic demo (seed 42). They demonstrate the analytics, visualization and storytelling workflow and are not claims about a real market.</sub>
+
 ## What AUGUST is
 
 AUGUST is not a generic dashboard and it is not a collection of notebooks.
