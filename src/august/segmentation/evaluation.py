@@ -13,7 +13,7 @@ def clustering_quality(features: np.ndarray, labels: np.ndarray) -> dict:
         raise ValueError("clustering metrics require at least two non-trivial clusters")
 
     return {
-        "clusters": int(len(unique)),
+        "clusters": len(unique),
         "silhouette_score": float(silhouette_score(features, labels)),
         "davies_bouldin_score": float(davies_bouldin_score(features, labels)),
         "note": "Do not name clusters until feature profiles have been inspected.",
