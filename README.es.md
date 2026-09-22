@@ -20,7 +20,7 @@
 >
 > **Dado todo lo que sabemos, ¿qué deberíamos hacer después y qué tan seguros estamos de esa decisión?**
 
-**Demo en vivo:** aún no desplegada · **Reporte técnico:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
+**Demo en vivo:** aún no desplegada · **Analítica ejecutiva:** [reports/EXECUTIVE_DEMO_REPORT.md](reports/EXECUTIVE_DEMO_REPORT.md) · **Flujo BI:** [docs/BI_STORYTELLING.md](docs/BI_STORYTELLING.md) · **Reporte técnico:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
 
 ## Qué es AUGUST
 
@@ -205,6 +205,18 @@ Reglas adicionales:
 
 Consulta [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md).
 
+## Evidencia para portafolio
+
+AUGUST ahora demuestra la capa de comunicación que conecta modelado con una decisión de negocio:
+
+- **Dashboard ejecutivo:** series de tiempo, comparación macro, ranking por zona y KPIs dentro del producto en Next.js.
+- **Data storytelling:** cada overview sigue **Señal → Evidencia → Implicación → Siguiente decisión** en vez de mostrar gráficas sin conclusión.
+- **Datos listos para Power BI / Tableau:** `python -m pipelines.export_bi` genera facts, agregados y KPIs limpios en CSV dentro de `data/processed/bi/`.
+- **Reporting reproducible:** `python -m pipelines.generate_executive_report` genera un resumen ejecutivo desde el mismo contrato analítico usado por la API.
+- **Una sola fuente de verdad:** `build_executive_overview()` alimenta API, dashboard web, exportaciones BI y reporte para evitar que las métricas cambien entre superficies.
+
+Consulta [BI + Data Storytelling](docs/BI_STORYTELLING.md) y el [reporte ejecutivo del demo](reports/EXECUTIVE_DEMO_REPORT.md).
+
 ## Implementación actual
 
 El milestone foundation implementa código real para:
@@ -221,7 +233,10 @@ El milestone foundation implementa código real para:
 - baseline Difference-in-Differences;
 - esquema DuckDB y analítica SQL;
 - endpoints de producto con FastAPI;
-- interfaz premium construida en Next.js;
+- analítica ejecutiva + contrato determinístico de storytelling;
+- pipeline de exportación para Power BI / Tableau;
+- reporting ejecutivo reproducible en Markdown;
+- interfaz premium en Next.js con gráficas SVG nativas;
 - unit tests;
 - Docker Compose;
 - CI con GitHub Actions.
@@ -332,6 +347,7 @@ Endpoints iniciales:
 ```text
 GET  /health
 GET  /v1/market/pulse
+GET  /v1/analytics/overview
 POST /v1/properties/analyze
 POST /v1/scenarios/simulate
 POST /v1/risk/decision
