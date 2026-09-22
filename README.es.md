@@ -22,6 +22,17 @@
 
 **Demo en vivo:** aún no desplegada · **Analítica ejecutiva:** [reports/EXECUTIVE_DEMO_REPORT.md](reports/EXECUTIVE_DEMO_REPORT.md) · **Flujo BI:** [docs/BI_STORYTELLING.md](docs/BI_STORYTELLING.md) · **Reporte técnico:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
 
+## Analítica ejecutiva — de un vistazo
+
+![Vista ejecutiva de analítica de AUGUST](docs/assets/august-executive-overview.svg)
+
+<p align="center">
+  <img src="docs/assets/august-market-trend.svg" alt="Tendencia del mercado en AUGUST" width="49%" />
+  <img src="docs/assets/august-neighborhood-pricing.svg" alt="Precio por metro cuadrado por zona en AUGUST" width="49%" />
+</p>
+
+<sub>Todos los valores mostrados arriba provienen del demo sintético determinístico de AUGUST (seed 42). Demuestran el flujo de analítica, visualización y storytelling; no representan afirmaciones sobre un mercado real.</sub>
+
 ## Qué es AUGUST
 
 AUGUST no es un dashboard genérico y tampoco es una colección de notebooks.
