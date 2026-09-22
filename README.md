@@ -20,7 +20,7 @@
 >
 > **Given everything we know, what should we do next — and how certain are we?**
 
-**Live demo:** not deployed yet · **Technical report:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
+**Live demo:** not deployed yet · **Executive analytics:** [reports/EXECUTIVE_DEMO_REPORT.md](reports/EXECUTIVE_DEMO_REPORT.md) · **BI workflow:** [docs/BI_STORYTELLING.md](docs/BI_STORYTELLING.md) · **Technical report:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
 
 ## What AUGUST is
 
@@ -205,6 +205,18 @@ Additional rules:
 
 Read [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md).
 
+## Portfolio evidence
+
+AUGUST now demonstrates the communication layer that sits between modeling and a business decision:
+
+- **Executive dashboard:** time-series charts, macro comparison, neighborhood ranking and KPI cards in the Next.js product.
+- **Data storytelling:** every overview follows **Signal → Evidence → Implication → Next decision** instead of presenting charts without a conclusion.
+- **Power BI / Tableau-ready data:** `python -m pipelines.export_bi` creates clean CSV facts, aggregates and KPI tables under `data/processed/bi/`.
+- **Reproducible reporting:** `python -m pipelines.generate_executive_report` generates a written executive summary from the same analytical contract used by the API.
+- **Single source of truth:** `build_executive_overview()` feeds the API, web dashboard, BI exports and report so metrics do not drift between surfaces.
+
+See [BI + Data Storytelling](docs/BI_STORYTELLING.md) and the [executive demo report](reports/EXECUTIVE_DEMO_REPORT.md).
+
 ## Current implementation
 
 The foundation milestone implements real code for:
@@ -221,7 +233,10 @@ The foundation milestone implements real code for:
 - Difference-in-Differences baseline;
 - DuckDB schema and SQL analytics;
 - FastAPI product endpoints;
-- a premium Next.js product shell;
+- executive analytics + deterministic storytelling contract;
+- Power BI / Tableau export pipeline;
+- reproducible executive Markdown reporting;
+- a premium Next.js product shell with native SVG charts;
 - unit tests;
 - Docker Compose;
 - GitHub Actions CI.
@@ -332,6 +347,7 @@ Initial endpoints:
 ```text
 GET  /health
 GET  /v1/market/pulse
+GET  /v1/analytics/overview
 POST /v1/properties/analyze
 POST /v1/scenarios/simulate
 POST /v1/risk/decision

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from august.analytics.executive import build_executive_overview
 from august.core.contracts import DataClassification
 from august.fraud.decision import decide_transaction
 from august.llm.analyst import explain_structured_analysis
@@ -74,6 +75,11 @@ def demo_market_context() -> MarketContext:
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "service": "august-api", "version": "0.1.0"}
+
+
+@app.get("/v1/analytics/overview")
+def analytics_overview() -> dict:
+    return build_executive_overview()
 
 
 @app.get("/v1/market/pulse")
