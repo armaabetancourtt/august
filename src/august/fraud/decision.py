@@ -53,8 +53,9 @@ def optimize_review_threshold(
     amounts: np.ndarray,
     *,
     thresholds: np.ndarray | None = None,
-    costs: FraudCosts = FraudCosts(),
+    costs: FraudCosts | None = None,
 ) -> dict:
+    costs = costs or FraudCosts()
     probabilities = np.asarray(probabilities, dtype=float)
     labels = np.asarray(labels, dtype=int)
     amounts = np.asarray(amounts, dtype=float)
