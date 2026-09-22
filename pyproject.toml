@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "august-decision-intelligence"
+version = "0.1.0"
+description = "AUGUST — Decision Intelligence & Risk Engine"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "duckdb>=1.5,<2",
+  "fastapi>=0.115,<1",
+  "httpx>=0.28,<1",
+  "numpy>=2.2,<3",
+  "pandas>=2.3,<3",
+  "polars>=1.30,<2",
+  "pydantic>=2.10,<3",
+  "python-dotenv>=1.0,<2",
+  "scikit-learn>=1.9,<2",
+  "scipy>=1.15,<2",
+  "statsmodels>=0.14,<1",
+  "uvicorn[standard]>=0.34,<1"
+]
+
+[project.optional-dependencies]
+ml = [
+  "lightgbm>=4.6,<5",
+  "networkx>=3.4,<4",
+  "ruptures>=1.1,<2",
+  "shap>=0.47,<1",
+  "xgboost>=3,<4"
+]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.11,<1"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
