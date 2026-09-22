@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520">
+<defs><linearGradient id="g"><stop stop-color="#7d5626"/><stop offset="1" stop-color="#f1b45f"/></linearGradient><style>
+.t{font:700 27px Inter,Arial,sans-serif;fill:#f4f1e9}.s{font:500 13px Inter,Arial,sans-serif;fill:#94969d}
+.e{font:800 10px Inter,Arial,sans-serif;fill:#f1b45f;letter-spacing:1.6px}.lbl{font:700 14px Inter,Arial,sans-serif;fill:#d7d4cd}
+.val{font:700 12px Inter,Arial,sans-serif;fill:#f4f1e9}
+</style></defs>
+<rect width="1000" height="520" rx="24" fill="#090a0c"/><rect x="1" y="1" width="998" height="518" rx="23" fill="none" stroke="#25272c"/>
+<text x="50" y="52" class="e">AUGUST · LOCAL PRICING</text><text x="50" y="88" class="t">Median price per m² by neighborhood</text>
+<text x="50" y="114" class="s">400 deterministic synthetic properties · ranked by median price / m²</text>
+<text x="70" y="191" class="lbl">West</text><rect x="190" y="175" width="610" height="22" rx="11" fill="#1b1d21"/><rect x="190" y="175" width="610" height="22" rx="11" fill="url(#g)"/><text x="825" y="192" class="val">MXN 60,605</text>
+<text x="70" y="253" class="lbl">Central</text><rect x="190" y="237" width="610" height="22" rx="11" fill="#1b1d21"/><rect x="190" y="237" width="505.4" height="22" rx="11" fill="url(#g)"/><text x="825" y="254" class="val">MXN 50,214</text>
+<text x="70" y="315" class="lbl">South</text><rect x="190" y="299" width="610" height="22" rx="11" fill="#1b1d21"/><rect x="190" y="299" width="472.1" height="22" rx="11" fill="url(#g)"/><text x="825" y="316" class="val">MXN 46,887</text>
+<text x="70" y="377" class="lbl">North</text><rect x="190" y="361" width="610" height="22" rx="11" fill="#1b1d21"/><rect x="190" y="361" width="417.5" height="22" rx="11" fill="url(#g)"/><text x="825" y="378" class="val">MXN 41,481</text>
+<text x="50" y="485" class="s">West leads the demo distribution; use neighborhood context before portfolio-level averages.</text>
+</svg>
