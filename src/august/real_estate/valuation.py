@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from august.core.contracts import DataClassification, Evidence, Provenance
+from august.econometrics.real_values import real_return
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,8 @@ def analyze_property(
     )
     asking_gap = property_.asking_price_mxn / fair_value - 1
     expected_monthly_rent = fair_value * market.rental_yield / 12
+    real_rental_yield = real_return(market.rental_yield, market.annual_inflation)
+    affordability_pressure_pp = max(market.mortgage_rate - 0.08, 0.0) * 100
 
     relative_uncertainty = 0.12 + 0.05 * abs(market.demand_index - market.supply_index)
     lower = fair_value * (1 - relative_uncertainty)
@@ -113,12 +116,16 @@ def analyze_property(
         "asking_price_mxn": round(property_.asking_price_mxn, 2),
         "asking_gap_pct": round(asking_gap * 100, 2),
         "expected_monthly_rent_mxn": round(expected_monthly_rent, 2),
+        "nominal_rental_yield_pct": round(market.rental_yield * 100, 2),
+        "real_rental_yield_pct": round(real_rental_yield * 100, 2),
+        "interest_rate_affordability_pressure_pp": round(affordability_pressure_pp, 2),
         "confidence": round(confidence, 3),
         "evidence": [item.model_dump() for item in evidence],
         "assumptions": [
             "Baseline coefficients are engineering assumptions, not fitted production coefficients.",
             "Neighborhood price per square meter is the primary comparable anchor.",
             "The interval is a scenario uncertainty band, not a calibrated prediction interval yet.",
+            "Real rental yield uses the current inflation assumption via the Fisher relation.",
         ],
         "limitations": [
             "No fitted comparable-sales model is included in the foundation milestone.",
