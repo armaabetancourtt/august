@@ -131,7 +131,7 @@ def build_executive_overview(
             "fx_change_12m_pct": round(fx_change, 2),
             "median_property_price_mxn": round(float(properties["price_mxn"].median()), 0),
             "median_price_m2": round(float(properties["price_m2"].median()), 0),
-            "property_count": int(len(properties)),
+            "property_count": len(properties),
         },
         "story": story,
         "market_series": series,
