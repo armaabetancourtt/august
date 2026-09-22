@@ -41,5 +41,5 @@ def shapley_revenue_decomposition(before: dict[str, float], after: dict[str, flo
         "total_change": total_change,
         "contributions": contributions,
         "largest_absolute_driver": driver,
-        "method": "exact Shapley decomposition over traffic × conversion × AOV",
+        "method": "exact Shapley decomposition over traffic x conversion x AOV",
     }
