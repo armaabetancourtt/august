@@ -21,6 +21,8 @@ type Analysis = {
   asking_price_mxn: number;
   asking_gap_pct: number;
   expected_monthly_rent_mxn: number;
+  nominal_rental_yield_pct: number;
+  real_rental_yield_pct: number;
   confidence: number;
   evidence: Array<{ label: string; value: number | string; method: string }>;
   assumptions: string[];
@@ -29,11 +31,12 @@ type Analysis = {
 
 type Scenario = {
   expected_total_return_pct: number;
+  expected_real_total_return_pct: number;
   p10_total_return_pct: number;
   p50_total_return_pct: number;
-  p90_total_return_pct: number;
+  p50_real_return_pct: number;
   probability_of_nominal_loss_pct: number;
-  expected_downside_mxn: number;
+  probability_of_real_loss_pct: number;
   warning: string;
 };
 
@@ -110,6 +113,7 @@ export default function Home() {
           current_value_mxn: analysis.fair_value_mxn,
           annual_rent_mxn: annualRent,
           years: 5,
+          base_inflation_rate: 0.045,
           ...shocks
         })
       });
@@ -231,6 +235,12 @@ export default function Home() {
                   <div className="interval">
                     Uncertainty band {money.format(analysis.fair_value_interval_95_like[0])} → {money.format(analysis.fair_value_interval_95_like[1])}
                   </div>
+                  <div className="scenario-result">
+                    <ScenarioStat label="ASKING GAP" value={`${analysis.asking_gap_pct > 0 ? "+" : ""}${analysis.asking_gap_pct}%`} />
+                    <ScenarioStat label="MONTHLY RENT" value={money.format(analysis.expected_monthly_rent_mxn)} />
+                    <ScenarioStat label="NOMINAL YIELD" value={`${analysis.nominal_rental_yield_pct}%`} />
+                    <ScenarioStat label="REAL YIELD" value={`${analysis.real_rental_yield_pct}%`} />
+                  </div>
                   <div className="evidence">
                     {analysis.evidence.slice(0, 4).map((item) => (
                       <div className="evidence-row" key={item.label}>
@@ -274,10 +284,10 @@ export default function Home() {
             {scenario ? (
               <>
                 <div className="scenario-result">
-                  <ScenarioStat label="EXPECTED 5Y RETURN" value={`${scenario.expected_total_return_pct}%`} />
-                  <ScenarioStat label="P10" value={`${scenario.p10_total_return_pct}%`} />
-                  <ScenarioStat label="P50" value={`${scenario.p50_total_return_pct}%`} />
-                  <ScenarioStat label="LOSS PROBABILITY" value={`${scenario.probability_of_nominal_loss_pct}%`} />
+                  <ScenarioStat label="EXPECTED REAL 5Y RETURN" value={`${scenario.expected_real_total_return_pct}%`} />
+                  <ScenarioStat label="REAL P50" value={`${scenario.p50_real_return_pct}%`} />
+                  <ScenarioStat label="NOMINAL P10" value={`${scenario.p10_total_return_pct}%`} />
+                  <ScenarioStat label="REAL LOSS PROBABILITY" value={`${scenario.probability_of_real_loss_pct}%`} />
                 </div>
                 <p className="warning">{scenario.warning}</p>
               </>
