@@ -5,12 +5,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from august.core.contracts import DataClassification
+from august.fraud.decision import decide_transaction
 from august.llm.analyst import explain_structured_analysis
 from august.real_estate.valuation import MarketContext, PropertyFeatures, analyze_property
 from august.scenario.monte_carlo import ScenarioInputs, simulate_property_returns
 from august.synthetic.demo import generate_macro_history
 
-app = FastAPI(title="AUGUST API", version="0.1.0", description="Decision Intelligence & Risk Engine")
+app = FastAPI(
+    title="AUGUST API",
+    version="0.1.0",
+    description="Decision Intelligence & Risk Engine",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,11 +39,20 @@ class ScenarioRequest(BaseModel):
     current_value_mxn: float = Field(gt=0)
     annual_rent_mxn: float = Field(ge=0)
     years: int = Field(default=5, ge=1, le=30)
+    base_inflation_rate: float = Field(default=0.045, gt=-1, lt=1)
     inflation_delta_pp: float = 0.0
     mortgage_rate_delta_pp: float = 0.0
     demand_delta_pct: float = 0.0
     supply_delta_pct: float = 0.0
     property_price_delta_pct: float = 0.0
+
+
+class RiskDecisionRequest(BaseModel):
+    fraud_probability: float = Field(ge=0, le=1)
+    transaction_amount: float = Field(ge=0)
+    review_threshold: float = Field(default=0.25, ge=0, le=1)
+    block_threshold: float = Field(default=0.80, ge=0, le=1)
+    review_cost: float = Field(default=40.0, ge=0)
 
 
 class AskRequest(BaseModel):
@@ -101,6 +115,22 @@ def property_analysis(request: PropertyRequest) -> dict:
 def scenario(request: ScenarioRequest) -> dict:
     result = simulate_property_returns(ScenarioInputs(**request.model_dump()))
     result["data_classification"] = "synthetic"
+    return result
+
+
+@app.post("/v1/risk/decision")
+def risk_decision(request: RiskDecisionRequest) -> dict:
+    result = decide_transaction(
+        request.fraud_probability,
+        request.transaction_amount,
+        review_threshold=request.review_threshold,
+        block_threshold=request.block_threshold,
+        review_cost=request.review_cost,
+    )
+    result["decision_basis"] = "expected_loss_thresholding"
+    result["warning"] = (
+        "Decision layer only. fraud_probability must come from a separately validated model."
+    )
     return result
 
 
