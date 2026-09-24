@@ -1,16 +1,18 @@
-# AUGUST
+<p align="center">
+  <img src="docs/assets/august-brand-banner.svg" alt="Official AUGUST wordmark on the signature orange background" width="100%" />
+</p>
 
-## Decision Intelligence & Risk Engine
+<h1 align="center">AUGUST</h1>
+<p align="center"><strong>Decision Intelligence &amp; Risk Engine</strong><br/><em>De señales a decisiones.</em></p>
+<p align="center"><a href="README.md">English</a> · <a href="README.es.md">Español</a></p>
 
-**De señales crudas a decisiones.**
-
-[English](README.md) · [Español](README.es.md)
-
-![Python](https://img.shields.io/badge/Python-3.12-111111?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-API-111111?logo=fastapi&logoColor=white)
-![DuckDB](https://img.shields.io/badge/DuckDB-Analytics-111111?logo=duckdb&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-111111?logo=scikitlearn&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-16-111111?logo=nextdotjs&logoColor=white)
+<p align="center">
+  <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-FF5600?logo=python&logoColor=white" />
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-API-FF5600?logo=fastapi&logoColor=white" />
+  <img alt="DuckDB" src="https://img.shields.io/badge/DuckDB-Analytics-FF5600?logo=duckdb&logoColor=white" />
+  <img alt="scikit-learn" src="https://img.shields.io/badge/scikit--learn-ML-FF5600?logo=scikitlearn&logoColor=white" />
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-FF5600?logo=nextdotjs&logoColor=white" />
+</p>
 
 ### FUENTES DE DATOS REALES · MODELOS · FORECASTING · FRAUDE · INFERENCIA CAUSAL · GENAI
 
@@ -21,6 +23,16 @@
 > **Dado todo lo que sabemos, ¿qué deberíamos hacer después y qué tan seguros estamos de esa decisión?**
 
 **Demo en vivo:** aún no desplegada · **Analítica ejecutiva:** [reports/EXECUTIVE_DEMO_REPORT.md](reports/EXECUTIVE_DEMO_REPORT.md) · **Flujo BI:** [docs/BI_STORYTELLING.md](docs/BI_STORYTELLING.md) · **Reporte técnico:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
+
+## Identidad oficial de AUGUST
+
+La marca utiliza **naranja AUGUST `#FF5600`**, logotipo tipográfico blanco y superficies oscuras cálidas. Utiliza los assets oficiales en lugar de recrear las letras:
+
+- [Logotipo oficial](apps/web/public/august-wordmark.svg) — vector blanco para fondos naranjas u oscuros.
+- [Ícono de AUGUST](apps/web/public/august-icon.svg) — fondo naranja con la A blanca distintiva.
+- [Banner del README](docs/assets/august-brand-banner.svg) — logotipo oficial sobre el color de marca.
+
+La aplicación utiliza el mismo naranja en acciones principales, navegación, gráficas y color del navegador. Las visualizaciones de la documentación comparten la paleta.
 
 ## Analítica ejecutiva — de un vistazo
 
