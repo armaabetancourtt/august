@@ -1,16 +1,18 @@
-# AUGUST
+<p align="center">
+  <img src="docs/assets/august-brand-banner.svg" alt="Official AUGUST wordmark on the signature orange background" width="100%" />
+</p>
 
-## Decision Intelligence & Risk Engine
+<h1 align="center">AUGUST</h1>
+<p align="center"><strong>Decision Intelligence &amp; Risk Engine</strong><br/><em>From raw signals to decisions.</em></p>
+<p align="center"><a href="README.md">English</a> · <a href="README.es.md">Español</a></p>
 
-**From raw signals to decisions.**
-
-[English](README.md) · [Español](README.es.md)
-
-![Python](https://img.shields.io/badge/Python-3.12-111111?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-API-111111?logo=fastapi&logoColor=white)
-![DuckDB](https://img.shields.io/badge/DuckDB-Analytics-111111?logo=duckdb&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-111111?logo=scikitlearn&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-16-111111?logo=nextdotjs&logoColor=white)
+<p align="center">
+  <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-FF5600?logo=python&logoColor=white" />
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-API-FF5600?logo=fastapi&logoColor=white" />
+  <img alt="DuckDB" src="https://img.shields.io/badge/DuckDB-Analytics-FF5600?logo=duckdb&logoColor=white" />
+  <img alt="scikit-learn" src="https://img.shields.io/badge/scikit--learn-ML-FF5600?logo=scikitlearn&logoColor=white" />
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-FF5600?logo=nextdotjs&logoColor=white" />
+</p>
 
 ### REAL DATA SOURCES · MODELS · FORECASTING · FRAUD · CAUSAL INFERENCE · GENAI
 
@@ -21,6 +23,16 @@
 > **Given everything we know, what should we do next — and how certain are we?**
 
 **Live demo:** not deployed yet · **Executive analytics:** [reports/EXECUTIVE_DEMO_REPORT.md](reports/EXECUTIVE_DEMO_REPORT.md) · **BI workflow:** [docs/BI_STORYTELLING.md](docs/BI_STORYTELLING.md) · **Technical report:** [docs/SCIENTIFIC_RIGOR.md](docs/SCIENTIFIC_RIGOR.md) · **Model cards:** [model_cards/](model_cards/)
+
+## Official AUGUST identity
+
+The official brand uses vivid **AUGUST Orange `#FF5600`**, a white custom wordmark, and warm, dark product surfaces. Reuse the supplied assets rather than recreating the lettering:
+
+- [Official wordmark](apps/web/public/august-wordmark.svg) — white vector lettering for orange or dark backgrounds.
+- [AUGUST app icon](apps/web/public/august-icon.svg) — orange background with the signature white A.
+- [README brand banner](docs/assets/august-brand-banner.svg) — official wordmark on the orange brand canvas.
+
+The web app uses the same orange for primary actions, navigation, chart highlights and browser theme. Documentation visuals follow the same palette.
 
 ## Executive analytics — at a glance
 

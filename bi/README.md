@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="../README.md"><img src="../docs/assets/august-brand-banner.svg" alt="AUGUST brand banner" width="560" /></a>
+</p>
+
 # AUGUST BI Workspace
 
 This folder makes the BI layer visible in the repository instead of leaving Power BI and Tableau as résumé keywords.
