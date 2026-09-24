@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="../../README.md"><img src="../../docs/assets/august-brand-banner.svg" alt="AUGUST brand banner" width="560" /></a>
+</p>
+
 # SYNTHETIC DATA
 
 Everything generated into this directory is simulated.
