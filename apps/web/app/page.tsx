@@ -193,7 +193,9 @@ export default function Home() {
   return (
     <div className="shell">
       <aside className="sidebar">
-        <div className="brand">AUGUST</div>
+        <div className="brand-lockup">
+          <img src="/august-wordmark.svg" alt="AUGUST" className="brand-wordmark" width="188" height="67" />
+        </div>
         <div className="brand-sub">DECISION INTELLIGENCE<br />& RISK ENGINE</div>
 
         <nav className="nav">
@@ -225,6 +227,10 @@ export default function Home() {
         </div>
 
         <header className="hero">
+          <div className="hero-brand">
+            <img src="/august-wordmark.svg" alt="AUGUST" width="1250" height="445" />
+            <span className="hero-edition">INTELLIGENCE, BY DESIGN / 01</span>
+          </div>
           <div className="kicker">DECISION INTELLIGENCE</div>
           <h1>Know what changes before the decision does.</h1>
           <p>
@@ -232,6 +238,7 @@ export default function Home() {
             and conditional scenarios. The product shows the decision first —
             then the evidence underneath it.
           </p>
+          <div className="hero-rule" aria-hidden="true"><span>DECISIONS, BACKED BY EVIDENCE.</span><span>EST. 2026</span></div>
         </header>
 
         <section className="section executive-section" id="insights">
