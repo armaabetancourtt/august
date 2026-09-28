@@ -6,11 +6,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import platform
 from pathlib import Path
 
 import joblib
 import numpy as np
 import pandas as pd
+import sklearn
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -157,6 +159,16 @@ def run_benchmark(
         "split": "chronological_60_20_20_no_feature_duplicates",
         "features": FEATURES,
         "seed": SEED,
+        "environment": {
+            "python": platform.python_version(),
+            "numpy": np.__version__,
+            "pandas": pd.__version__,
+            "scikit_learn": sklearn.__version__,
+        },
+        "candidate_params": {
+            name: {key: str(value) for key, value in model.get_params(deep=False).items()}
+            for name, model in trained.items()
+        },
         "selection_metric": "validation_average_precision",
         "threshold_metric": "validation_f1",
         "selected_model": selected,
@@ -174,7 +186,12 @@ def run_benchmark(
 
 def save_artifacts(model: object, report: dict, output: Path) -> None:
     output.mkdir(parents=True, exist_ok=True)
-    joblib.dump(model, output / "fraud-model.joblib")
+    model_path = output / "fraud-model.joblib"
+    joblib.dump(model, model_path)
+    report = {
+        **report,
+        "model_artifact_sha256": hashlib.sha256(model_path.read_bytes()).hexdigest(),
+    }
     (output / "fraud-report.json").write_text(
         json.dumps(report, indent=2, allow_nan=False) + "\n", encoding="utf-8"
     )
