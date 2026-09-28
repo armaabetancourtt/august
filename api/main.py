@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -8,6 +8,7 @@ from august.analytics.executive import build_executive_overview
 from august.core.contracts import DataClassification
 from august.fraud.decision import decide_transaction
 from august.llm.analyst import explain_structured_analysis
+from august.llm.grounded import GroundingError, answer_with_quotes
 from august.real_estate.valuation import MarketContext, PropertyFeatures, analyze_property
 from august.scenario.monte_carlo import ScenarioInputs, simulate_property_returns
 from august.synthetic.demo import generate_macro_history
@@ -59,6 +60,16 @@ class RiskDecisionRequest(BaseModel):
 class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=500)
     analysis: dict
+
+
+class SourceDocument(BaseModel):
+    id: str = Field(min_length=1, max_length=80)
+    text: str = Field(min_length=1, max_length=5000)
+
+
+class GroundedAskRequest(BaseModel):
+    question: str = Field(min_length=3, max_length=500)
+    documents: list[SourceDocument] = Field(min_length=1, max_length=12)
 
 
 def demo_market_context() -> MarketContext:
@@ -143,3 +154,16 @@ def risk_decision(request: RiskDecisionRequest) -> dict:
 @app.post("/v1/ask")
 def ask(request: AskRequest) -> dict:
     return explain_structured_analysis(request.question, request.analysis)
+
+
+@app.post("/v1/ask/grounded")
+def ask_grounded(request: GroundedAskRequest) -> dict:
+    """Opt-in external provider. Caller explicitly supplies source documents."""
+    try:
+        return answer_with_quotes(
+            request.question, [item.model_dump() for item in request.documents]
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except GroundingError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
