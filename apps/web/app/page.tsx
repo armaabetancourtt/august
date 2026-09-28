@@ -78,6 +78,23 @@ type Scenario = {
   warning: string;
 };
 
+type AgentResult = {
+  answer: string;
+  data_classification: string;
+  comparison: {
+    expected_real_return_change_pp: number;
+    real_loss_probability_change_pp: number;
+  };
+  baseline: { expected_real_total_return_pct: number; probability_of_real_loss_pct: number };
+  stress: { expected_real_total_return_pct: number; probability_of_real_loss_pct: number };
+  sources: Array<{ id: string; text: string }>;
+  generated_interpretation: null | {
+    status: string;
+    claims: Array<{ text: string; source_id: string; quote: string }>;
+  };
+  limitations: string[];
+};
+
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "MXN",
@@ -92,6 +109,8 @@ export default function Home() {
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [question, setQuestion] = useState("What is the main risk in this property?");
   const [answer, setAnswer] = useState("");
+  const [agent, setAgent] = useState<AgentResult | null>(null);
+  const [useGenai, setUseGenai] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const [property, setProperty] = useState({
@@ -170,16 +189,29 @@ export default function Home() {
   }
 
   async function askAugust() {
-    if (!analysis || !question.trim()) return;
-    const response = await fetch(`${API}/v1/ask`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, analysis })
-    });
-    if (!response.ok) return;
-    const payload = await response.json();
-    setAnswer(payload.answer);
-    setActive("ask");
+    if (!analysis || !question.trim() || busy) return;
+    setBusy(true);
+    setAgent(null);
+    setAnswer("");
+    try {
+      const response = await fetch(API + "/v1/agent/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, property, shocks, years: 5, use_genai: useGenai })
+      });
+      if (!response.ok) {
+        const problem = await response.json().catch(() => ({}));
+        throw new Error(problem.detail ?? "Analytical agent unavailable");
+      }
+      const payload = (await response.json()) as AgentResult;
+      setAgent(payload);
+      setAnswer(payload.answer);
+    } catch (cause) {
+      setAnswer(cause instanceof Error ? cause.message : "Analytical agent failed");
+    } finally {
+      setBusy(false);
+      setActive("ask");
+    }
   }
 
   const nav = [
@@ -476,18 +508,50 @@ export default function Home() {
         <section className="section" id="ask">
           <div className="section-head">
             <div>
-              <h2 className="section-title">Ask AUGUST</h2>
-              <p className="section-copy">Language after analytics — never instead of analytics.</p>
+              <h2 className="section-title">AUGUST Intelligence</h2>
+              <p className="section-copy">Bounded tool agent: property baseline → paired scenario runs → auditable evidence.</p>
             </div>
+            <span className="decision-state">SYNTHETIC · AUDITABLE</span>
           </div>
 
           <div className="panel">
             <div className="ask-box">
-              <input value={question} onChange={(e) => setQuestion(e.target.value)} />
-              <button onClick={askAugust} disabled={!analysis}>ASK</button>
+              <input aria-label="Analytical question" value={question} onChange={(e) => setQuestion(e.target.value)} />
+              <button onClick={askAugust} disabled={!analysis || busy}>
+                {busy ? "RUNNING…" : "RUN AGENT"}
+              </button>
             </div>
-            {answer ? <div className="answer">{answer}</div> : null}
-            <p className="warning">Current mode is deterministic structured explanation. A local LLM is a later, evaluated layer.</p>
+            <label className="warning" style={{ display: "block", marginTop: 14 }}>
+              <input type="checkbox" checked={useGenai} onChange={(e) => setUseGenai(e.target.checked)} />
+              {" "}Opt in to external generative commentary (requires configured provider).
+            </label>
+            {answer ? <div className="answer" role="status">{answer}</div> : null}
+            {agent ? (
+              <>
+                <div className="scenario-result">
+                  <ScenarioStat label="BASELINE · REAL RETURN" value={String(agent.baseline.expected_real_total_return_pct) + "%"} />
+                  <ScenarioStat label="STRESS · REAL RETURN" value={String(agent.stress.expected_real_total_return_pct) + "%"} />
+                  <ScenarioStat label="CHANGE · RETURN" value={String(agent.comparison.expected_real_return_change_pp) + " pp"} />
+                  <ScenarioStat label="CHANGE · REAL LOSS RISK" value={String(agent.comparison.real_loss_probability_change_pp) + " pp"} />
+                </div>
+                <div className="evidence">
+                  {agent.sources.map((source) => (
+                    <div className="evidence-row" key={source.id}>
+                      <span>{source.id}</span>
+                      <strong style={{ maxWidth: "70%", fontSize: 12, textAlign: "right" }}>{source.text}</strong>
+                    </div>
+                  ))}
+                </div>
+                {agent.generated_interpretation?.claims.map((claim, index) => (
+                  <div className="answer" key={index}>
+                    {claim.text}
+                    <p className="warning">Source: {claim.source_id} · Exact anchor: “{claim.quote}”</p>
+                  </div>
+                ))}
+                <p className="warning">{agent.limitations.join(" ")}</p>
+              </>
+            ) : null}
+            <p className="warning">The model cannot execute arbitrary code or alter computed values. Generated quote anchors establish source integrity, not semantic truth.</p>
           </div>
         </section>
       </main>

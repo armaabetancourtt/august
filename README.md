@@ -1,3 +1,5 @@
+> **NEW: AUGUST Intelligence (bounded analytical agent):** [workflow, sources and limitations](docs/AGENTIC_INTELLIGENCE.md). `POST /v1/agent/analyze` executes the existing property baseline plus paired Monte Carlo scenarios, returns deterministic evidence, and supports explicitly opted-in quote-anchored GenAI. Synthetic demo; no live model validation or market claims.
+
 <p align="center">
   <img src="docs/assets/august-brand-banner.svg" alt="Official AUGUST wordmark on the signature orange background" width="100%" />
 </p>
