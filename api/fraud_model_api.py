@@ -4,10 +4,13 @@ Run: AUGUST_FRAUD_ARTIFACTS=artifacts/fraud-real uvicorn api.fraud_model_api:app
 """
 from __future__ import annotations
 
+import hashlib
+import io
 import json
 import os
 import time
 from collections import deque
+from functools import lru_cache
 from pathlib import Path
 
 import joblib
@@ -33,14 +36,37 @@ class DriftRequest(BaseModel):
     current: list[float] = Field(min_length=2)
 
 
+@lru_cache(maxsize=2)
+def _load_verified(
+    model_path: str,
+    report_path: str,
+    model_stat: tuple[int, int],
+    report_stat: tuple[int, int],
+) -> tuple[object, dict]:
+    """Cache an operator-controlled, hash-verified model until either file changes."""
+    del model_stat, report_stat  # Included in the cache key for safe refresh.
+    metadata = json.loads(Path(report_path).read_text(encoding="utf-8"))
+    raw = Path(model_path).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != metadata.get("model_artifact_sha256"):
+        raise HTTPException(status_code=503, detail="Model artifact fingerprint mismatch")
+    if metadata.get("features") != FEATURES:
+        raise HTTPException(status_code=503, detail="Model feature schema mismatch")
+    # joblib/pickle executes code; caller must control BOTH model and manifest files.
+    return joblib.load(io.BytesIO(raw)), metadata
+
+
 def _artifacts() -> tuple[object, dict]:
     root = Path(os.environ.get("AUGUST_FRAUD_ARTIFACTS", "artifacts/fraud-real"))
     model_path = root / "fraud-model.joblib"
     report_path = root / "fraud-report.json"
     if not model_path.is_file() or not report_path.is_file():
         raise HTTPException(status_code=503, detail="Train and register real model first")
-    # joblib/pickle is executable: load ONLY artifacts created locally by a trusted operator.
-    return joblib.load(model_path), json.loads(report_path.read_text(encoding="utf-8"))
+    model_stat, report_stat = model_path.stat(), report_path.stat()
+    return _load_verified(
+        str(model_path.resolve()), str(report_path.resolve()),
+        (model_stat.st_mtime_ns, model_stat.st_size),
+        (report_stat.st_mtime_ns, report_stat.st_size),
+    )
 
 
 @app.get("/health")
@@ -67,6 +93,7 @@ def predict(request: PredictRequest) -> dict:
         return {
             "fraud_probability": probability,
             "model": report["selected_model"],
+            "model_artifact_sha256": report["model_artifact_sha256"],
             "dataset_sha256": report["dataset"]["dataframe_sha256"],
             "threshold": report["selected_threshold"],
             "flagged_for_review": probability >= report["selected_threshold"],
