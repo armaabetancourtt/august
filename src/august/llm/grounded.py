@@ -125,3 +125,34 @@ def answer_with_quotes(
         "usage": usage,
         "limitation": "Quote and source integrity checked; semantic factuality needs human evaluation.",
     }
+
+
+def evaluate_retrieval_cases(cases: Sequence[dict], *, top_k: int = 3) -> dict:
+    """Curated references, not an assertion of model factuality or live performance."""
+    if not cases or not 1 <= top_k <= 5:
+        raise ValueError("Expected cases and top_k between 1 and 5")
+    hits = 0
+    recovered = 0
+    total_relevant = 0
+    for case in cases:
+        documents = case["documents"]
+        relevant = set(case["relevant_source_ids"])
+        if not relevant:
+            raise ValueError("Each case needs at least one relevant source")
+        ids = [doc["id"] for doc in documents]
+        if len(set(ids)) != len(ids) or not relevant.issubset(ids):
+            raise ValueError("Reference IDs must exist and be unique")
+        rows = retrieve_lexical_baseline(
+            case["question"], [doc["text"] for doc in documents], top_k=top_k
+        )
+        predicted = {ids[row["index"]] for row in rows if row["score"] > 0}
+        hits += bool(predicted & relevant)
+        recovered += len(predicted & relevant)
+        total_relevant += len(relevant)
+    return {
+        "cases": len(cases),
+        "hit_at_k": hits / len(cases),
+        "recall_at_k": recovered / total_relevant,
+        "k": top_k,
+        "evaluation_scope": "caller_supplied_reference_labels",
+    }
