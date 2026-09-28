@@ -2,7 +2,7 @@
   <img src="docs/assets/august-brand-banner.svg" alt="Official AUGUST wordmark on the signature orange background" width="100%" />
 </p>
 
-> **AI engineering evidence · experimental:** [Real ULB/OpenML fraud benchmark](docs/FRAUD_REAL_BENCHMARK.md) · [training code](src/august/fraud/benchmark.py) · [unit tests](tests/test_fraud_real_benchmark.py) · [research inference API](api/fraud_model_api.py). Reproduce with `python -m pipelines.train_fraud_real`. Actual real-data scores are pending external execution; the original synthetic demo remains clearly separate.
+> **AI engineering evidence · experimental:** [Grounded generative analyst](docs/GENAI_EVALUATION.md) · [real ULB/OpenML fraud benchmark](docs/FRAUD_REAL_BENCHMARK.md) · [training code](src/august/fraud/benchmark.py) · [unit tests](tests/test_fraud_real_benchmark.py) · [research inference API](api/fraud_model_api.py). Reproduce with `python -m pipelines.train_fraud_real`. Actual real-data scores are pending external execution; the original synthetic demo remains clearly separate.
 
 
 <h1 align="center">AUGUST</h1>
