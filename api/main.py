@@ -9,6 +9,7 @@ from august.core.contracts import DataClassification
 from august.fraud.decision import decide_transaction
 from august.llm.analyst import explain_structured_analysis
 from august.llm.grounded import GroundingError, answer_with_quotes
+from august.llm.tool_agent import run_decision_agent
 from august.real_estate.valuation import MarketContext, PropertyFeatures, analyze_property
 from august.scenario.monte_carlo import ScenarioInputs, simulate_property_returns
 from august.synthetic.demo import generate_macro_history
@@ -70,6 +71,22 @@ class SourceDocument(BaseModel):
 class GroundedAskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=500)
     documents: list[SourceDocument] = Field(min_length=1, max_length=12)
+
+
+class AgentShocks(BaseModel):
+    inflation_delta_pp: float = Field(default=0, ge=-3, le=5, allow_inf_nan=False)
+    mortgage_rate_delta_pp: float = Field(default=0, ge=-4, le=5, allow_inf_nan=False)
+    demand_delta_pct: float = Field(default=0, ge=-30, le=30, allow_inf_nan=False)
+    supply_delta_pct: float = Field(default=0, ge=-30, le=40, allow_inf_nan=False)
+    property_price_delta_pct: float = Field(default=0, ge=-30, le=30, allow_inf_nan=False)
+
+
+class AgentRequest(BaseModel):
+    question: str = Field(min_length=3, max_length=500)
+    property: PropertyRequest
+    shocks: AgentShocks = Field(default_factory=AgentShocks)
+    years: int = Field(default=5, ge=1, le=30)
+    use_genai: bool = False
 
 
 def demo_market_context() -> MarketContext:
@@ -166,4 +183,22 @@ def ask_grounded(request: GroundedAskRequest) -> dict:
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except GroundingError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/v1/agent/analyze")
+def agent_analysis(request: AgentRequest) -> dict:
+    """Fixed analytic tool graph with optional, explicitly enabled LLM commentary."""
+    try:
+        return run_decision_agent(
+            request.question,
+            PropertyFeatures(**request.property.model_dump()),
+            demo_market_context(),
+            shocks=request.shocks.model_dump(),
+            years=request.years,
+            use_genai=request.use_genai,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except (GroundingError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
