@@ -1,0 +1,29 @@
+august_analytics:
+  target: bigquery
+  outputs:
+    bigquery:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: portfolio_analytics
+      location: US
+      threads: 4
+      priority: interactive
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
+      database: AUGUST
+      warehouse: AUGUST_TRANSFORM
+      schema: ANALYTICS
+      threads: 4
+    databricks:
+      type: databricks
+      catalog: "{{ env_var('DATABRICKS_CATALOG') }}"
+      schema: analytics
+      host: "{{ env_var('DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      threads: 4
