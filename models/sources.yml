@@ -1,0 +1,18 @@
+version: 2
+sources:
+  - name: august_raw
+    schema: raw
+    tables:
+      - name: property_events
+        columns:
+          - name: event_id
+            data_tests: [unique, not_null]
+          - name: occurred_at
+            data_tests: [not_null]
+models:
+  - name: stg_property_events
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: property_id
+        data_tests: [not_null]
